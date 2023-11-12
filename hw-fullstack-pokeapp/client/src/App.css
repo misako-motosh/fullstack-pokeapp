@@ -1,0 +1,43 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+h1 {
+  color: white;
+}
+
+.pokedex-page {
+  width: 100vw;
+  height: 100%;
+  background-color: blueviolet;
+  background-attachment: fixed;
+  background-size: cover;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.pokemon-cards {
+  width: 70%;
+}
+
+.pokemon-card {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  background-color: white;
+}
+
+.pokemon-card-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 30px;
+}
+
+.load-more-button {
+  background-color: green;
+  margin-top: 50px;
+}
