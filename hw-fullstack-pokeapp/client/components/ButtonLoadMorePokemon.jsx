@@ -8,13 +8,16 @@ function ButtonLoadMorePokemon({ onPokemonLoad }) {
     const loadMorePokemon = async () => {
         try {
             const response = await fetch(
-                `https://pokeapi.co/api/v2/pokemon/?limit=${itemsPerPage}&offset=${offset}`);
+                `${import.meta.env.VITE_API_URL}?limit=${itemsPerPage}&offset=${offset}`, {
+                    method: 'GET',
+                    headers: {'Content-Type': 'application/json'},
+                });
             
             if (response.ok) {
                 setCurrentPage(currentPage + 1);
                 onPokemonLoad(offset + itemsPerPage);
             } else {
-                console.error('Error fetching data:');
+                console.error('Error fetching data');
             }
         } catch (error) {
             console.error('Error fetching data:', error);

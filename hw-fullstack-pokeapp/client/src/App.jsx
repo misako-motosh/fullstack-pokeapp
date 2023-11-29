@@ -12,16 +12,21 @@ function App() {
       try {
         if (!initialLoad) {
           const response = await fetch(
-            `https://pokeapi.co/api/v2/pokemon/?limit=20&offset=${offset}`
-          );
+            `${import.meta.env.VITE_API_URL}?limit=20&offset=${offset}`, {
+              method: 'GET',
+              headers: {'Content-Type': 'application/json'},
+            });
 
           if (response.ok) {
             const data = await response.json();
-            const pokemonList = data.results;
+            console.log('Received data:', data);
+            const pokemonList = await data;
+            console.log('Pokemon list:', pokemonList);
 
             const pokemonDetails = await Promise.all(
               pokemonList.map(async (pokemon) => {
-                const response1 = await fetch(pokemon.url);
+                console.log('Processing pokemon:', pokemonData);
+                const response1 = await fetch(pokemon);
                 if (response1.ok) {
                   return response1.json();
                 } else {
@@ -40,6 +45,7 @@ function App() {
       } catch (error) {
         console.error('Error fetching data:', error);
       }
+      
     };
     fetchPokemons();
   }, [offset, initialLoad]);
@@ -49,7 +55,7 @@ function App() {
       <h1>Pokedex</h1>
       <div className="pokemon-cards">
         <div className="pokemon-card-container">
-          {pokemons.map((pokemon, index) => (
+        {pokemons.map((pokemon, index) => (
             <div className="pokemon-card" key={index}>
               <img
                 src={pokemon.sprites.front_default}
@@ -58,7 +64,7 @@ function App() {
                 width="120"
               />
               <h3>{pokemon.name}</h3>
-              <p>Type: {pokemon.types[0].type.name}</p>
+              <p>Type: {pokemon.types && pokemon.types[0] && pokemon.types[0].type.name}</p>
             </div>
           ))}
         </div>
