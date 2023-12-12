@@ -12,23 +12,24 @@ function App() {
       try {
         if (!initialLoad) {
           const response = await fetch(
-            `${import.meta.env.VITE_API_URL}?limit=20&offset=${offset}`, {
+            `${import.meta.env.VITE_API_URL}/pokemons?limit=20&offset=${offset}`, {
               method: 'GET',
               headers: {'Content-Type': 'application/json'},
             });
 
           if (response.ok) {
-            const data = await response.json();
-            console.log('Received data:', data);
-            const pokemonList = await data;
-            console.log('Pokemon list:', pokemonList);
+            const { results } = await response.json();
 
-            const pokemonDetails = await Promise.all(
-              pokemonList.map(async (pokemon) => {
-                console.log('Processing pokemon:', pokemonData);
-                const response1 = await fetch(pokemon);
-                if (response1.ok) {
-                  return response1.json();
+            const pokemonDetails = (
+              results.map(async (pokemon) => {
+                const detailsResponse = await fetch(pokemon.url);
+                if (detailsResponse.ok) {
+                  const detailsData = await detailsResponse.json();
+                  return {
+                    name: detailsData.name,
+                    img: detailsData.sprites.front_default,
+                    type: detailsData.type,
+                  };
                 } else {
                   throw new Error('Failed to fetch details');
                 }
@@ -44,12 +45,11 @@ function App() {
         }
       } catch (error) {
         console.error('Error fetching data:', error);
-      }
-      
+      }  
     };
+
     fetchPokemons();
   }, [offset, initialLoad]);
-
   return (
     <div className="pokedex-page">
       <h1>Pokedex</h1>
@@ -58,13 +58,13 @@ function App() {
         {pokemons.map((pokemon, index) => (
             <div className="pokemon-card" key={index}>
               <img
-                src={pokemon.sprites.front_default}
+                src={pokemon.img}
                 alt={pokemon.name}
                 height="120"
                 width="120"
               />
               <h3>{pokemon.name}</h3>
-              <p>Type: {pokemon.types && pokemon.types[0] && pokemon.types[0].type.name}</p>
+              <p>Type: {pokemon.type && pokemon.type[0] && pokemon.type[0].type.name}</p>
             </div>
           ))}
         </div>
