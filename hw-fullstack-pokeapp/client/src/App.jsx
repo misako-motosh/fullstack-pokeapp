@@ -12,31 +12,14 @@ function App() {
       try {
         if (!initialLoad) {
           const response = await fetch(
-            `${import.meta.env.VITE_API_URL}/pokemons?limit=20&offset=${offset}`, {
+            `${import.meta.env.VITE_API_URL}?limit=20&offset=${offset}`, {
               method: 'GET',
               headers: {'Content-Type': 'application/json'},
             });
 
           if (response.ok) {
-            const { results } = await response.json();
-
-            const pokemonDetails = (
-              results.map(async (pokemon) => {
-                const detailsResponse = await fetch(pokemon.url);
-                if (detailsResponse.ok) {
-                  const detailsData = await detailsResponse.json();
-                  return {
-                    name: detailsData.name,
-                    img: detailsData.sprites.front_default,
-                    type: detailsData.type,
-                  };
-                } else {
-                  throw new Error('Failed to fetch details');
-                }
-              })
-            );
-
-            setPokemons((prevPokemons) => [...prevPokemons, ...pokemonDetails]);
+            const { data } = await response.json();
+            setPokemons((prevPokemons) => [...prevPokemons, ...data]);
           } else {
             throw new Error('Failed to fetch data');
           }
@@ -50,6 +33,7 @@ function App() {
 
     fetchPokemons();
   }, [offset, initialLoad]);
+
   return (
     <div className="pokedex-page">
       <h1>Pokedex</h1>
@@ -64,7 +48,7 @@ function App() {
                 width="120"
               />
               <h3>{pokemon.name}</h3>
-              <p>Type: {pokemon.type && pokemon.type[0] && pokemon.type[0].type.name}</p>
+              <p>Type: {pokemon.type && pokemon.type.length > 0 ? pokemon.type[0] : 'Unknown'}</p>
             </div>
           ))}
         </div>
